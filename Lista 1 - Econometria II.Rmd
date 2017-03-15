@@ -5,13 +5,17 @@ date: "24 de fevereiro de 2017"
 output: word_document
 ---
 
-### 1. Qual é a diferença entre os três grupos de métodos de estimação: Lineares, Não-Lineares (incluindo Mínimos Quadrados Não Lineares) e Não Paramétricos e Semiparamétricos? 
-
-
 ### 2. A partir de um banco de dados, de sua escolha, e discutido em sala da aula, resolva:
-a)	Estime (utilizando o software Stata) um modelo logit simples, de sua escolha, com duas variÃ¡veis explicativas em nível;
-b)	Calcule manualmente os valores marginais referentes aos parÃ¢metros, apresentando a equaÃ§Ã£o logit usada e suas respectivas derivadas parciais em relaÃ§Ã£o Ã s variÃ¡veis explicativas;
-c)	Apresente o mÃ©todo Delta e o cÃ¡lculo manual do erro padrÃ£o dos valores marginais;
-*Resolução:*
+a)	Estime (utilizando o software Stata) um modelo logit simples, de sua escolha, com duas variáveis explicativas em nível;
+b)	Calcule manualmente os valores marginais referentes aos parâmetros, apresentando a equação logit usada e suas respectivas derivadas parciais em relação às variáveis explicativas;
+c)	Apresente o método Delta e o cálculo manual do erro padrão dos valores marginais; 
 
+*Resolução:*
+Para esta questão será utilizada uma base de dados com os estabelecimentos baianos, ativos em 2015. Dados disponíveis na RAIS-MTE de 2015. Como variável dependente binária foi utilizado o tamanho do estabelecimento, sendo 1, caso este tenha mais de 100 funcionários, 0 caso contrário. Como variáveis explicativas estão a quantidade de vínculos de trabalho ativos no município e um indicador de concentração (Herfindahl-Hirshman Index) de vínculos em cada setor, por município.
+A ideia é explorar se a existência de grandes empresas pode seer explicada pela quantidade de trabalhadores e a concentração destes num setor, dos municípios baianos.
+```{r echo=FALSE}
+BASE2 <- read.csv2("BASE_QUESTAO_2.csv")
+logit1 <- glm(GRANDE ~ VINCULOS , data = BASE2, family = "binomial") 
+summary(logit1)
+```
 
