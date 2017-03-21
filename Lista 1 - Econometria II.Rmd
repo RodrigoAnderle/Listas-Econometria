@@ -11,11 +11,31 @@ b)	Calcule manualmente os valores marginais referentes aos parâmetros, apresenta
 c)	Apresente o método Delta e o cálculo manual do erro padrão dos valores marginais; 
 
 *Resolução:*
-Para esta questão será utilizada uma base de dados com os estabelecimentos baianos, ativos em 2015. Dados disponíveis na RAIS-MTE de 2015. Como variável dependente binária foi utilizado o tamanho do estabelecimento, sendo 1, caso este tenha mais de 100 funcionários, 0 caso contrário. Como variáveis explicativas estão a quantidade de vínculos de trabalho ativos no município e um indicador de concentração (Herfindahl-Hirshman Index) de vínculos em cada setor, por município.
-A ideia é explorar se a existência de grandes empresas pode seer explicada pela quantidade de trabalhadores e a concentração destes num setor, dos municípios baianos.
+
 ```{r echo=FALSE}
-BASE2 <- read.csv2("BASE_QUESTAO_2.csv")
-logit1 <- glm(GRANDE ~ VINCULOS , data = BASE2, family = "binomial") 
-summary(logit1)
+library(stargazer)
+BASE2 <- read.csv2("BASE_QUESTAO_2.csv", row.names = 1)
+logit1 <- glm(GRANDE ~ Vl.Remun.Média.Nom + (Escolaridade.após.2005 > 8), data = BASE2, family = "binomial") 
+stargazer(logit1,type = "text", title = "Logit 1", align = T,
+          dep.var.labels = "Empresas com mais de 100 funcionários",
+          covariate.labels = c("Remuneração Média em 2015 (Nominal)",
+                              "Ensino superior completo")
+                               )
 ```
+
+
+b) A regressão foi realizada da seguinte forma:
+
+$$Emp.G = \beta_0 + \beta_1Rem.Méd.Nom. + \beta_2Sup.Comp.$$
+
+A função de distribuição logística é dada por:
+
+$$ g(z) = exp(z) / (1 + exp(z)) $$
+
+Substituindo a primeira (z) na segunda:
+
+$$ g(z) = exp(\beta_0 + \beta_1Rem.Méd.Nom. + \beta_2Sup.Comp.) / 
+(1 + exp(\beta_0 + \beta_1Rem.Méd.Nom. + \beta_2Sup.Comp.))
+
+
 
