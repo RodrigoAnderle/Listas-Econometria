@@ -11,11 +11,45 @@ b)	Calcule manualmente os valores marginais referentes aos parâmetros, apresenta
 c)	Apresente o método Delta e o cálculo manual do erro padrão dos valores marginais; 
 
 *Resolução:*
-Para esta questão será utilizada uma base de dados com os estabelecimentos baianos, ativos em 2015. Dados disponíveis na RAIS-MTE de 2015. Como variável dependente binária foi utilizado o tamanho do estabelecimento, sendo 1, caso este tenha mais de 100 funcionários, 0 caso contrário. Como variáveis explicativas estão a quantidade de vínculos de trabalho ativos no município e um indicador de concentração (Herfindahl-Hirshman Index) de vínculos em cada setor, por município.
-A ideia é explorar se a existência de grandes empresas pode seer explicada pela quantidade de trabalhadores e a concentração destes num setor, dos municípios baianos.
+
 ```{r echo=FALSE}
-BASE2 <- read.csv2("BASE_QUESTAO_2.csv")
-logit1 <- glm(GRANDE ~ VINCULOS , data = BASE2, family = "binomial") 
-summary(logit1)
+library(stargazer)
+BASE2 <- read.csv2("BASE_QUESTAO_2.csv", row.names = 1)
+logit1 <- glm(GRANDE ~ Vl.Remun.Média.Nom + Idade , data = BASE2, family = "binomial") 
+stargazer(logit1,type = "text", title = "Logit 1", align = T,
+          dep.var.labels = "Empresas com mais de 100 funcionários",
+          covariate.labels = c("Remuneração Média em 2015 (Nominal)","Idade", "Constante"))
 ```
+
+
+b) A regressão foi realizada da seguinte forma:
+
+$$ z = Emp.G = \beta_0 + \beta_1Rem.Méd.Nom. + \beta_2Idade$$
+
+A função de distribuição logística é dada por:
+
+$$ \Lambda(z) = \frac{e^{(z)}}{(1 + e^{(z)} )}  $$
+
+Substituindo a primeira (z) na segunda:
+
+$$
+\Lambda(z) = \frac{e^{\beta_0 + \beta_1Rem.Méd.Nom. + \beta_2Idade}}
+{1 + e^{\beta_0 + \beta_1Rem.Méd.Nom. + \beta_2Idade}}
+$$
+De acordo com Cameron e Trivedi (2005, pg. 467), os efeitos marginais de uma função logit são obtidos através da derivação parcial da função logística chegaremos a:
+$$
+ \Lambda(z) (1 - \Lambda(z)) \beta_j
+$$
+Neste caso específico $\beta_j$ será 0,0003, para o efeito marginal da Renda Nominal Média ao longo de 2015; ou 0,347, para o efeito marginal da Idade em 2015.Para tanto é necessário indicar em que ponto das variáveis será analisado. Neste exercício será analisado o efeito marginal médio.
+```{r echo=F}
+colMeans(BASE2[,c(16,31)])
+```
+
+A conta a ser executada será:
+$$
+\frac{e^{-0,825 + 0,009(37,219) + 0,0003(2436,398)}}
+{1 + e^{-0,825 + 0,009(37,219) + 0,0003(2436,398)}}
+\beta_j= 0.5599331\beta_j
+$$
+Assim, o efeito marginal médio da Idade em 2015 era de $0,5599331\times 0,009 = 0.005039398$ é de 0,5% a cada real incrementado a cada ano de idade, em relação a idade média. Para a Renda Nominal Média, o incrmento é de $o,5599331\times0,0003 = 0,000167 $, ou seja de 0,01% para a variação de 1 real, na renda média.
 
