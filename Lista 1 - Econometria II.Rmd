@@ -14,7 +14,6 @@ c)	Apresente o método Delta e o cálculo manual do erro padrão dos valores margin
 
 ```{r echo=FALSE}
 library(stargazer)
-BASE2 <- read.csv2("BASE_QUESTAO_2.csv", row.names = 1)
 logit1 <- glm(GRANDE ~ Vl.Remun.Média.Nom + Idade , data = BASE2, family = "binomial") 
 stargazer(logit1,type = "text", title = "Logit 1", align = T,
           dep.var.labels = "Empresas com mais de 100 funcionários",
@@ -22,7 +21,8 @@ stargazer(logit1,type = "text", title = "Logit 1", align = T,
 ```
 
 
-b) A regressão foi realizada da seguinte forma:
+b) 
+A regressão foi realizada da seguinte forma:
 
 $$ z = Emp.G = \beta_0 + \beta_1Rem.Méd.Nom. + \beta_2Idade$$
 
@@ -40,7 +40,7 @@ De acordo com Cameron e Trivedi (2005, pg. 467), os efeitos marginais de uma fun
 $$
  \Lambda(z) (1 - \Lambda(z)) \beta_j
 $$
-Neste caso específico $\beta_j$ será 0,0003, para o efeito marginal da Renda Nominal Média ao longo de 2015; ou 0,347, para o efeito marginal da Idade em 2015.Para tanto é necessário indicar em que ponto das variáveis será analisado. Neste exercício será analisado o efeito marginal médio.
+Neste caso específico $\beta_j$ será 0,0003, para o efeito marginal da Renda Nominal Média ao longo de 2015; ou 0,347, para o efeito marginal da Idade em 2015.Para tanto é necessário indicar em que ponto das variáveis será analisado. Neste exercício será analisado o efeito marginal para os termos médios da Idade e Valor de Remuneração:
 ```{r echo=F}
 colMeans(BASE2[,c(16,31)])
 ```
@@ -51,5 +51,29 @@ $$
 {1 + e^{-0,825 + 0,009(37,219) + 0,0003(2436,398)}}
 \beta_j= 0.5599331\beta_j
 $$
-Assim, o efeito marginal médio da Idade em 2015 era de $0,5599331\times 0,009 = 0.005039398$ é de 0,5% a cada real incrementado a cada ano de idade, em relação a idade média. Para a Renda Nominal Média, o incrmento é de $o,5599331\times0,0003 = 0,000167 $, ou seja de 0,01% para a variação de 1 real, na renda média.
+Assim, o efeito marginal médio da Idade em 2015 era de $0,5599331\times 0,009 = 0.005039398$ é de 0,5% a cada real incrementado a cada ano de idade, em relação a idade média. Para a Renda Nominal Média, o incrmento é de $0,5599331\times0,0003 = 0,000167 $, ou seja de 0,01% para a variação de 1 real, na renda média.
+
+c)
+O método Delta é utilizado para calcular os intervalos de confiança e segue a metodologia apresentada por Cameron e Trivedi(2005, pg.231). O intervalo de confiança será dado por:
+$$
+\gamma \belong \widehat{\gamma} \pm z_{\alpha/2}se[\widehat{\gamma}]
+$$
+onde,
+$$
+se[\widehat{\gamma}] = \sqrt{ \widhat{r}N^{-1}\widehat{C}widehat{r}} .
+$$
+ 
+Resumidamente,$\widhat{r}$ é  função de restrição estimada, tal que: $\widhat{\r} = r(\widehat{\teta} e r(\teta) = \frac{\partial{\gamma}}{\partial{\teta}'})$.
+
+Assim como para o efeito marginal do coeficiente, o intervalo de confiança será composto das derivadas parciais da função estimada, multiplicado pelo seu erro padrão (se). Ou seja, uma conta análoga a realizada na letra b, porém substituindo o $\beta_j$, por $se_j$:
+$$
+\frac{e^{-0,825 + 0,009(37,219) + 0,0003(2436,398)}}
+{1 + e^{-0,825 + 0,009(37,219) + 0,0003(2436,398)}}
+\pm z_{\alpha/2} se_j= 0,5599331 \pm z_{\alpha/2} se_j
+$$
+
+O intervalo de confiança para a probabilidade de um trabalhador, em Salvador, for de uma grande empresa, condicionado a sua remuneração nominal média, em 2015, era de $+ 0,5599331 \times 1,96 \times 0,000001342 = + 0,000001472$, ou de 0,0001%. Este será o intervalo de confiança à direita. Conforme Cameron e Trivedi (2005), uma das críticas do método delta é justamente que ele especifica intervalos de confiança simétricos, portanto, o intervalo à esquerda será de -0,0001%.
+Já para a variável idade, o intervalo de confiança do coeficiente será de $+ 0,5599331 \times 1,96 \times 0,00883 = + 0,000969$, ou seja de 0,096%, à direita e de -0,096% à esquerda.
+
+
 
