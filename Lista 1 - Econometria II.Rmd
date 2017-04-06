@@ -2,7 +2,7 @@
 title: "Lista 1 - Econometria II"
 author: "Rodrigo Volmir Anderle, Carlos Oliveira"
 date: "24 de fevereiro de 2017"
-output: word_document
+output: "word_document"
 ---
 
 ### 2. A partir de um banco de dados, de sua escolha, e discutido em sala da aula, resolva:
@@ -12,12 +12,14 @@ c)	Apresente o método Delta e o cálculo manual do erro padrão dos valores margin
 
 *Resolução:*
 
-```{r echo=FALSE}
+```{r echo=FALSE,messages =F ,results='asis'}
+BASE2 <- read.csv2("BASE_QUESTAO_2.csv")
 library(stargazer)
 logit1 <- glm(GRANDE ~ Vl.Remun.Média.Nom + Idade , data = BASE2, family = "binomial") 
-stargazer(logit1,type = "text", title = "Logit 1", align = T,
+stargazer(logit1, title = "Logit 1", align = T, type = "text",
           dep.var.labels = "Empresas com mais de 100 funcionários",
           covariate.labels = c("Remuneração Média em 2015 (Nominal)","Idade", "Constante"))
+
 ```
 
 
@@ -42,7 +44,7 @@ $$
 $$
 Neste caso específico $\beta_j$ será 0,0003, para o efeito marginal da Renda Nominal Média ao longo de 2015; ou 0,347, para o efeito marginal da Idade em 2015.Para tanto é necessário indicar em que ponto das variáveis será analisado. Neste exercício será analisado o efeito marginal para os termos médios da Idade e Valor de Remuneração:
 ```{r echo=F}
-colMeans(BASE2[,c(16,31)])
+pander(colMeans(BASE2[,c(16,31)]))
 ```
 
 A conta a ser executada será:
@@ -56,14 +58,14 @@ Assim, o efeito marginal médio da Idade em 2015 era de $0,5599331\times 0,009 = 
 c)
 O método Delta é utilizado para calcular os intervalos de confiança e segue a metodologia apresentada por Cameron e Trivedi(2005, pg.231). O intervalo de confiança será dado por:
 $$
-\gamma \belong \widehat{\gamma} \pm z_{\alpha/2}se[\widehat{\gamma}]
+\gamma \in \hat{\gamma} \pm z_{\alpha/2}se[\hat{\gamma}]
 $$
 onde,
 $$
-se[\widehat{\gamma}] = \sqrt{ \widhat{r}N^{-1}\widehat{C}widehat{r}} .
+se[\hat{\gamma}] = \sqrt{ \hat{r}N^{-1}\hat{C}\hat{r}} .
 $$
  
-Resumidamente,$\widhat{r}$ é  função de restrição estimada, tal que: $\widhat{\r} = r(\widehat{\teta} e r(\teta) = \frac{\partial{\gamma}}{\partial{\teta}'})$.
+Resumidamente,$\hat{r}$ é  função de restrição estimada, tal que: $\hat{r} = r(\hat{\theta} e r(\theta) = \frac{\partial{\gamma}}{\partial{\theta}'})$.
 
 Assim como para o efeito marginal do coeficiente, o intervalo de confiança será composto das derivadas parciais da função estimada, multiplicado pelo seu erro padrão (se). Ou seja, uma conta análoga a realizada na letra b, porém substituindo o $\beta_j$, por $se_j$:
 $$
@@ -76,4 +78,58 @@ O intervalo de confiança para a probabilidade de um trabalhador, em Salvador, fo
 Já para a variável idade, o intervalo de confiança do coeficiente será de $+ 0,5599331 \times 1,96 \times 0,00883 = + 0,000969$, ou seja de 0,096%, à direita e de -0,096% à esquerda.
 
 
+### 3 – Defina, especifique, estime e interprete os seguintes modelos abaixo, com base no material apresentado em sala de aula e um banco de dados de sua escollhe, em cross section. Procure especificar modelos que sejam úteis para ajudar a interpretar melhor a realidade.
+A apresentação dos resultados deverá conter: 
+(a) tabela inicial com as estatísticas descritivas (apenas no início);
+(b) para os modelos lineares, gerar gráficos com as inclinações e resíduos no entorno da reta de regressão; 
+(c)utilizar o software Stata (ou R),apresentar resultados tabelas resumo dos resultados geradas automaticamente no software Stata; 
+(e) as tabelas deverão ser geradas para transferência direta para o editor de texto (sem o recurso copiar-colar).
 
+**Métodos Não-Lineares**
+
+*Modelo de Probabilidade Linear*
+
+summary(BASE2[,c(53,32,16,36)]); table(BASE2[,14]); table(BASE2[,42])
+ProbLinear <- lm(GRANDE ~ Vl.Remun.Média..SM. + Idade + sqrt(Idade) + Tempo.Emprego + (Escolaridade.após.2005 > 9) + (IBGE.Subsetor == 24) + (IBGE.Subsetor == 15), data = BASE2)
+BASE2$Plinear <- predict(ProbLinear)
+ ggplot(BASE2,aes(x = Vl.Remun.Média..SM., y = Plinear))+ geom_smooth(method = "lm", se = T) +
+ geom_point(aes(fill = (Escolaridade.após.2005 > 9)) + geom_jitter()
+
+
+*Logit e Probit*
+```{r}
+logit2 <- glm(GRANDE ~ Vl.Remun.Média..SM. + Idade + sqrt(Idade) + Tempo.Emprego + (Escolaridade.após.2005 > 9) + (IBGE.Subsetor == 24) + (IBGE.Subsetor == 15), data = BASE2, family = binomial(link = "logit")) 
+BASE2$PNlinearL <- predict(logit2, type = "response")
+```
+
+
+```{r}
+ Probit1 <- glm(GRANDE ~ Vl.Remun.Média..SM. + Idade + sqrt(Idade) + Tempo.Emprego + (Escolaridade.após.2005 > 9) + (IBGE.Subsetor == 24) + (IBGE.Subsetor == 15) + (Faixa.Remun.Média..SM.== 2) + (Faixa.Remun.Média..SM.== 3) + (Faixa.Remun.Média..SM. == 4), data = BASE2, family = binomial(link = "probit")) 
+```
+
+BASE2$PNlinearL <- predict(logit2)
+
+*Modelo Poisson*
+
+Poisson1 <- glm(Vl.Remun.Média..SM. ~ Idade + sqrt(Idade) + Tempo.Emprego + (Escolaridade.após.2005 > 9) + (IBGE.Subsetor == 24) + (IBGE.Subsetor == 15) + Raça.Cor + Qtd.Hora.Contr, data = BASE2, family ="poisson") 
+
+*Variáveis Latentes*
+
+# http://lavaan.ugent.be/
+ 
+ 
+*Tobit*
+
+library(VGAM)
+Tobit1 <- vglm(Tamanho.Estabelecimento ~ Vl.Remun.Média..SM. + Idade + sqrt(Idade) + Tempo.Emprego + (Escolaridade.após.2005 > 9) + (IBGE.Subsetor == 24) + (IBGE.Subsetor == 15) , tobit(Lower = 0, Upper = 10), data = BASE2) 
+summary(Tobit1)
+rm(Tobit1)
+
+*Logit Ordenado*
+
+library(MASS)
+LogitOrd1 <- polr(Tamanho.Estabelecimento ~ Vl.Remun.Média..SM. + Idade + sqrt(Idade) + Tempo.Emprego + (Escolaridade.após.2005 > 9) + (IBGE.Subsetor == 24) + (IBGE.Subsetor == 15) , data = BASE2), Hess = T, method = "logit")
+
+*Probit Ordenado*
+
+ProbitOrd1 <- polr(Tamanho.Estabelecimento ~ Vl.Remun.Média..SM. + Idade + sqrt(Idade) + Tempo.Emprego + (Escolaridade.após.2005 > 9) + (IBGE.Subsetor == 24) + (IBGE.Subsetor == 15) , data = BASE2), Hess = T, method = "probit")
